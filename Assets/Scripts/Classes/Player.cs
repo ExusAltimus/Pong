@@ -33,4 +33,16 @@ public class Player : MonoBehaviour
     {
 
     }
+
+    public void CheckMapCollision(Bounds bounds)
+    {
+        if (Collider.bounds.max.y > bounds.max.y)
+        {
+            MoveTo(new Vector2(Collider.bounds.center.x, bounds.max.y - Collider.bounds.extents.y));
+        }
+        else if (Collider.bounds.min.y < bounds.min.y)
+        {
+            MoveTo(new Vector2(Collider.bounds.center.x, bounds.min.y + Collider.bounds.extents.y));
+        }
+    }
 }

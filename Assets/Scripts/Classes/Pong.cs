@@ -23,74 +23,50 @@ public class Pong : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 
-        //Input
-        Player1.HandleInput();
-        Player2.HandleInput();
+        //Input (Could be put in their own update functions as well)
+        HandleInput();
 
-        //Movement
-        Player1.MovementUpdate();
-        Player2.MovementUpdate();
-
-        //Don't go off screen
-        if (Player1.Collider.bounds.max.y > CameraBounds.max.y)
-        {
-            Player1.MoveTo(new Vector2(Player1.Collider.bounds.center.x, CameraBounds.max.y - Player1.Collider.bounds.extents.y));
-        }
-        else if (Player1.Collider.bounds.min.y < CameraBounds.min.y)
-        {
-            Player1.MoveTo(new Vector2(Player1.Collider.bounds.center.x, CameraBounds.min.y + Player1.Collider.bounds.extents.y));
-        }
-
-        if (Player2.Collider.bounds.max.y > CameraBounds.max.y)
-        {
-            Player2.MoveTo(new Vector2(Player2.Collider.bounds.center.x, CameraBounds.max.y - Player2.Collider.bounds.extents.y));
-        }
-        else if (Player2.Collider.bounds.min.y < CameraBounds.min.y)
-        {
-            Player2.MoveTo(new Vector2(Player2.Collider.bounds.center.x, CameraBounds.min.y + Player2.Collider.bounds.extents.y));
-        }
+        //Movement (Could be put in their own update functions as well)
+        MovementUpdate();
 
         //Collisions
         HandleCollisions();
     }
 
+    private void HandleInput()
+    {
+        Player1.HandleInput();
+        Player2.HandleInput();
 
+    }
+
+    private void MovementUpdate()
+    {
+        Player1.MovementUpdate();
+        Player2.MovementUpdate();
+        Ball.MovementUpdate();
+    }
 
     private void HandleCollisions()
     {
+        //Don't go off screen
+        Player1.CheckMapCollision(CameraBounds);
+        Player2.CheckMapCollision(CameraBounds);
 
         //Check direction
         if (Ball.Velocity.x < 0)
         {
             //Check player 1 collision
-            Ball.CheckPlayerCollison(Player1.Collider);
+            Ball.CheckPlayerCollison(Player1.Collider.bounds);
         }
         else
         {
             //Check player 2 collision
-            Ball.CheckPlayerCollison(Player2.Collider);
+            Ball.CheckPlayerCollison(Player2.Collider.bounds);
         }
 
-
-        //Check bound collision
-        if (Ball.Collider.bounds.max.y > CameraBounds.max.y)
+        if (Ball.CheckMapCollision(CameraBounds)) //Ball out of bounds
         {
-            Ball.Velocity.y = Ball.Velocity.y * -1;
-            print("Top collision");
-        }
-        else if (Ball.Collider.bounds.min.y < CameraBounds.min.y)
-        {
-            Ball.Velocity.y = Ball.Velocity.y * -1;
-            print("Bottom collision");
-        }
-        else if (Ball.Collider.bounds.max.x < CameraBounds.min.x)
-        {
-            print("Player 2 wins");
-            EndGame();
-        }
-        else if (Ball.Collider.bounds.min.x > CameraBounds.max.x)
-        {
-            print("Player 1 wins");
             EndGame();
         }
     }
@@ -98,7 +74,6 @@ public class Pong : MonoBehaviour {
     IEnumerator StartGame()  {
         print("Starting game.");
         yield return new WaitForSeconds(1.5f);
-        print(Time.time);
         print("Start!");
         Ball.Initilaize();
     }

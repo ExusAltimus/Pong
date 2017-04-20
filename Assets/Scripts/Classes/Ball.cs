@@ -19,6 +19,11 @@ public class Ball : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+
+    }
+
+    public void MovementUpdate()
+    {
         transform.Translate(Velocity * Speed * Time.smoothDeltaTime);
         if (!_ballDebounce) //Checks if ball has already collided with a player, then resets when it has passed the center (To prevent multiple player collisions)
         {
@@ -39,9 +44,9 @@ public class Ball : MonoBehaviour {
         _ballDebounce = true;
     }
 
-    public void CheckPlayerCollison(Collider collider)
+    public void CheckPlayerCollison(Bounds bounds)
     {
-        if (Collider.bounds.Intersects(collider.bounds) && _ballDebounce)
+        if (Collider.bounds.Intersects(bounds) && _ballDebounce)
         {
             _ballDebounce = false;
 
@@ -54,5 +59,32 @@ public class Ball : MonoBehaviour {
             Speed += SpeedIncrement;
         }
     } 
+
+    public bool CheckMapCollision(Bounds bounds)
+    {
+        //Check bound collision
+        if (Collider.bounds.max.y > bounds.max.y)
+        {
+            Velocity.y = Velocity.y * -1;
+            print("Top collision");
+            
+        }
+        else if (Collider.bounds.min.y < bounds.min.y)
+        {
+            Velocity.y = Velocity.y * -1;
+            print("Bottom collision");
+        }
+        else if (Collider.bounds.max.x < bounds.min.x)
+        {
+            print("Player 2 wins");
+            return true;
+        }
+        else if (Collider.bounds.min.x > bounds.max.x)
+        {
+            print("Player 1 wins");
+            return true;
+        }
+        return false;
+    }
 
 }
