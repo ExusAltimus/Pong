@@ -20,6 +20,12 @@ public static class PongSceneManager {
 
     public static void Exit()
     {
-        Application.Quit();
+        #if UNITY_EDITOR
+                UnityEditor.EditorApplication.isPlaying = false;
+        #elif UNITY_WEBPLAYER
+                 Application.OpenURL(webplayerQuitURL);
+        #else
+                 Application.Quit();
+        #endif
     }
 }
