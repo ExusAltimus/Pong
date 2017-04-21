@@ -78,11 +78,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\Scripts\Classes\Ball.cs" />
-    <Compile Include="Assets\Scripts\Classes\AI.cs" />
-    <Compile Include="Assets\Scripts\Classes\User.cs" />
+    <Compile Include="Assets\Scripts\Classes\AiPlayer.cs" />
+    <Compile Include="Assets\Scripts\Classes\HumanPlayer.cs" />
+    <Compile Include="Assets\Scripts\Classes\StaticCameraMap.cs" />
+    <Compile Include="Assets\Scripts\Classes\MoveableObject.cs" />
     <Compile Include="Assets\Scripts\Classes\Pong.cs" />
     <Compile Include="Assets\Scripts\Extensions.cs" />
-    <Compile Include="Assets\Scripts\Classes\Player.cs" />
+    <Compile Include="Assets\Scripts\Interfaces\IMap.cs" />
+    <Compile Include="Assets\Scripts\Interfaces\IMoveableObject.cs" />
+    <Compile Include="Assets\Scripts\Interfaces\IBall.cs" />
     <Compile Include="Assets\Scripts\Interfaces\IPlayer.cs" />
     <Compile Include="Assets\Scripts\MainMenu.cs" />
     <Compile Include="Assets\Scripts\PongSceneManager.cs" />

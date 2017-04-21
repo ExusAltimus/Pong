@@ -2,19 +2,16 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Ball : MonoBehaviour {
+public class Ball : MoveableObject, IBall {
 
-
-    public Collider Collider;
-    public Vector2 InitialVelocity;
-    public Vector2 Velocity;
-    public float Speed = 5.0f;
+    public float MinAngle = -60.0f;
+    public float MaxAngle = 60.0f;
     public float SpeedIncrement = 1f;
+    private bool _checkForPlayerCollisions = true; //Check for player collisions
 
-    private bool _ballDebounce = true;
     // Use this for initialization
     void Start () {
-        Collider = GetComponent<Collider>();
+
     }
 	
 	// Update is called once per frame
@@ -22,69 +19,54 @@ public class Ball : MonoBehaviour {
 
     }
 
-    public void MovementUpdate()
+    //Not needed anymore because the game checks the direction of the ball
+    /*
+    public override void MovementUpdate()
     {
-        transform.Translate(Velocity * Speed * Time.smoothDeltaTime);
-        if (!_ballDebounce) //Checks if ball has already collided with a player, then resets when it has passed the center (To prevent multiple player collisions)
+        base.MovementUpdate();
+        if (!_checkForPlayerCollisions) //Checks if ball has already collided with a player, then resets when it has passed the center (To prevent multiple player collisions)
         {
-            if ((Velocity.x > 0 && transform.position.x > 0.5) || (Velocity.x < 0 && transform.position.x < 0.5))
+            if ((Direction.x > 0 && Position.x > 0.5) || (Direction.x < 0 && Position.x < 0.5))
             {
-                _ballDebounce = true;
+                _checkForPlayerCollisions = true;
             }
         }
     }
+    */
 
-    public void Initilaize()
+    public void Initialize()
     {
-        int direction = Random.Range(-1.0f, 1.0f) <= 0 ? -1 : 1;
+        int xdir = Random.Range(-1.0f, 1.0f) <= 0 ? -1 : 1;
         float angle = Random.Range(-60, 60);
+        Direction = new Vector2(Mathf.Cos(Mathf.Deg2Rad * angle) * xdir, Mathf.Sin(Mathf.Deg2Rad * angle));
 
-        InitialVelocity = new Vector2(Mathf.Cos(Mathf.Deg2Rad * angle), Mathf.Sin(Mathf.Deg2Rad * angle));
-        Velocity = InitialVelocity;
-        _ballDebounce = true;
+        _checkForPlayerCollisions = true;
     }
 
-    public void CheckPlayerCollison(Bounds bounds)
+    public bool CheckPlayerCollison(IPlayer player)
     {
-        if (Collider.bounds.Intersects(bounds) && _ballDebounce)
+        if (Bounds.Intersects(player.Bounds) && _checkForPlayerCollisions)
         {
-            _ballDebounce = false;
-
-            float angle = Vector2.Angle(Velocity, Vector2.right) + Random.Range(-10.0f, 10.0f);
-            angle = Mathf.Clamp(angle, -60.0f, 60.0f);
-
-            int direction = Velocity.x > 0 ? -1 : 1;
-            Velocity = new Vector2(Mathf.Cos(Mathf.Deg2Rad * angle), Mathf.Sin(Mathf.Deg2Rad * angle)) * Random.Range(1.0f, 2.0f);
-            Velocity = Velocity * direction;
+            _checkForPlayerCollisions = false; //Stop checking for player collisions until it has passed the center of the map
+            float attackSpeed = player.GetAttackSpeed();
+            float angle = Vector2.Angle(Direction, Vector2.right) + (attackSpeed * 10.0f); //Add angle depending which direction player is attcking the ball from
+            angle = Mathf.Clamp(angle, -60.0f, 60.0f); //Make sure ball doesn't go nuts
+            int xdir = Direction.x > 0 ? -1 : 1;
+            int ydir = Direction.y > 0 ? -1 : 1;
+            Direction = new Vector2(xdir * Mathf.Cos(Mathf.Deg2Rad * angle), ydir * Mathf.Sin(Mathf.Deg2Rad * angle));
             Speed += SpeedIncrement;
-        }
-    } 
-
-    public bool CheckMapCollision(Bounds bounds)
-    {
-        //Check bound collision
-        if (Collider.bounds.max.y > bounds.max.y)
-        {
-            Velocity.y = Velocity.y * -1;
-            print("Top collision");
-            
-        }
-        else if (Collider.bounds.min.y < bounds.min.y)
-        {
-            Velocity.y = Velocity.y * -1;
-            print("Bottom collision");
-        }
-        else if (Collider.bounds.max.x < bounds.min.x)
-        {
-            print("Player 2 wins");
-            return true;
-        }
-        else if (Collider.bounds.min.x > bounds.max.x)
-        {
-            print("Player 1 wins");
             return true;
         }
         return false;
     }
 
+    public override EdgeCollision CheckMapEdgeCollision(IMap map)
+    {
+        EdgeCollision edgeCollision = base.CheckMapEdgeCollision(map); //Call base method, which keeps ball in bounds
+        if (edgeCollision == EdgeCollision.Top || edgeCollision == EdgeCollision.Bottom) // Bounce off top or bottom
+        {
+            Direction.y *= -1; //Flip y direction
+        }
+        return edgeCollision;
+    }
 }

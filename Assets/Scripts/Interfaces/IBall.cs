@@ -4,9 +4,8 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 
-public interface IPlayer : IMoveableObject
+public interface IBall : IMoveableObject
 {
-
-    void HandleInput();
-    float GetAttackSpeed();
+    bool CheckPlayerCollison(IPlayer player);
+    void Initialize();
 }

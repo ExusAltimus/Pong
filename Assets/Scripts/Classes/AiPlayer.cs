@@ -4,10 +4,13 @@ using System.Text;
 using UnityEngine;
 
 
-public class AI : Player
+public class AiPlayer : MoveableObject, IPlayer
 {
     public float Difficulty = 0.4f;
-    public Ball Ball;
+    public MoveableObject Target;
+
+    private bool _canAIMove = true;
+    private float _lastMove = 0;
     // Use this for initialization
     void Start()
     {
@@ -20,20 +23,22 @@ public class AI : Player
 
     }
 
-    private bool _canAIMove = true;
-    private float _lastMove = 0;
-    private float _aiSpeed = 1.0f;
-    public override void HandleInput()
+    public void SetTarget(MoveableObject target)
+    {
+        Target = target;
+    }
+
+    public void HandleInput()
     {
 
         if ((Time.time - _lastMove > 0.5f))
         {
             _lastMove = Time.time;
-            _aiSpeed = Random.Range(Difficulty, 1f); //Change speed every half second
+            Speed = Random.Range(Difficulty, 1f); //Change speed every half second
 
         }
 
-        float distance = Mathf.Abs(Ball.Collider.bounds.center.y - Collider.bounds.center.y);
+        float distance = Mathf.Abs(Target.Bounds.center.y - Bounds.center.y);
 
         if (distance < 0.3f)
         {
@@ -46,21 +51,22 @@ public class AI : Player
 
         if (_canAIMove)
         {
-            if (Ball.Collider.bounds.center.y > Collider.bounds.center.y)
+            if (Target.Bounds.center.y > Bounds.center.y)
             {
-                Direction = 1 * _aiSpeed;
+                Direction.y = 1;
             }
             else
             {
-                Direction = -1 * _aiSpeed;
+                Direction.y = -1;
             }
         }
         else
         {
-            Direction = 0;
+            Direction.y = 0;
         }
-
-
-
+    }
+    public float GetAttackSpeed()
+    {
+        return Direction.y;
     }
 }

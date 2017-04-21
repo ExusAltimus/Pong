@@ -5,68 +5,69 @@ using UnityEngine.SceneManagement;
 
 public class Pong : MonoBehaviour {
 
-    public Player Player1;
-    public Player Player2;
-    public Ball Ball;
+    public GameObject PaddleModel;
+    public GameObject BallModel;
 
-    public Bounds CameraBounds;
-
+    public List<IPlayer> Players;
+    public IBall Ball;
+    public IMap Map;
+    public bool IsPlaying = false;
 
     // Use this for initialization
     void Start () {
+        IsPlaying = false;
+        Map = new StaticCameraMap(Camera.main); //New map
+        
         StartCoroutine(StartGame());
-        var vertExtent = Camera.main.orthographicSize;
-        var horzExtent = vertExtent * Screen.width / Screen.height;
-        CameraBounds = Camera.main.OrthographicBounds();
     }
 	
 	// Update is called once per frame
 	void Update () {
+        if (!IsPlaying)
+            return;
 
         //Input (Could be put in their own update functions as well)
-        HandleInput();
+        foreach (var player in Players)
+        {
+            player.HandleInput();
+        }
 
         //Movement (Could be put in their own update functions as well)
-        MovementUpdate();
+        foreach (var player in Players)
+        {
+            player.MovementUpdate();
+        }
+        Ball.MovementUpdate();
 
         //Collisions
-        HandleCollisions();
-    }
-
-    private void HandleInput()
-    {
-        Player1.HandleInput();
-        Player2.HandleInput();
-
-    }
-
-    private void MovementUpdate()
-    {
-        Player1.MovementUpdate();
-        Player2.MovementUpdate();
-        Ball.MovementUpdate();
-    }
-
-    private void HandleCollisions()
-    {
         //Don't go off screen
-        Player1.CheckMapCollision(CameraBounds);
-        Player2.CheckMapCollision(CameraBounds);
+        foreach (var player in Players)
+        {
+            player.CheckMapEdgeCollision(Map);
+        }
 
+        Vector2 ballDirection = Ball.GetDirection();
         //Check direction
-        if (Ball.Velocity.x < 0)
+        if (ballDirection.x < 0)
         {
             //Check player 1 collision
-            Ball.CheckPlayerCollison(Player1.Collider.bounds);
+            Ball.CheckPlayerCollison(Players[0]);
         }
         else
         {
             //Check player 2 collision
-            Ball.CheckPlayerCollison(Player2.Collider.bounds);
+            Ball.CheckPlayerCollison(Players[1]);
         }
 
-        if (Ball.CheckMapCollision(CameraBounds)) //Ball out of bounds
+        OutOfBounds ballOutOfBounds = Map.CheckOutOfBounds(Ball.Bounds);
+        if (ballOutOfBounds == OutOfBounds.Left)
         {
+            //Player 2 wins
+            EndGame();
+        }
+        else if (ballOutOfBounds == OutOfBounds.Right)
+        {
+            //Player 1 wins
             EndGame();
         }
     }
@@ -75,7 +76,27 @@ public class Pong : MonoBehaviour {
         print("Starting game.");
         yield return new WaitForSeconds(1.5f);
         print("Start!");
-        Ball.Initilaize();
+        Players.Clear();
+        Ball.Initialize();
+        IsPlaying = true;
+    }
+
+    public void AiVersusAi()
+    {
+        Players.Add(new AiPlayer());
+        Players.Add(new AiPlayer());
+    }
+
+    public void HumanVersusAi()
+    {
+        Players.Add(new HumanPlayer());
+        Players.Add(new AiPlayer());
+    }
+
+    public void HumanVersusHuman()
+    {
+        Players.Add(new HumanPlayer());
+        Players.Add(new HumanPlayer(KeyCode.UpArrow, KeyCode.DownArrow));
     }
 
     public void EndGame()
