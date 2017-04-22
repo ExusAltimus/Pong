@@ -10,20 +10,8 @@ public class HumanPlayer : MoveableObject, IPlayer
     public const KeyCode UP_KEY = KeyCode.W;
     public const KeyCode DOWN_KEY = KeyCode.S;
 
-    public KeyCode UpKey;
-    public KeyCode DownKey;
-
-    public HumanPlayer()
-    {
-        UpKey = UP_KEY;
-        DownKey = DOWN_KEY;
-    }
-
-    public HumanPlayer(KeyCode upKey, KeyCode downKey)
-    {
-        UpKey = upKey;
-        DownKey = downKey;
-    }
+    public KeyCode UpKey = UP_KEY;
+    public KeyCode DownKey = DOWN_KEY;
 
     // Use this for initialization
     void Start()
@@ -35,6 +23,12 @@ public class HumanPlayer : MoveableObject, IPlayer
     void Update()
     {
 
+    }
+
+    public void SetKeys(KeyCode upKey, KeyCode downKey)
+    {
+        UpKey = upKey;
+        DownKey = downKey;
     }
 
     public void HandleInput()

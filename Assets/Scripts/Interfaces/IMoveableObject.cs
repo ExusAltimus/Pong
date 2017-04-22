@@ -6,8 +6,9 @@ using UnityEngine;
 public interface IMoveableObject
 {
     Bounds Bounds { get; }
+    void SetSpeed(float speed);
     Vector2 GetDirection();
     EdgeCollision CheckMapEdgeCollision(IMap map);
-    void MovementUpdate();
+    void MovementUpdate(float speedMultiplier);
 }
 

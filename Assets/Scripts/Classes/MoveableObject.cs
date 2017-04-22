@@ -38,20 +38,29 @@ public class MoveableObject : MonoBehaviour, IMoveableObject
         }
     }
 
-
-    void Start()
+    private void Awake()
     {
         Collider = GetComponent<Collider>();
     }
 
-    public virtual void MovementUpdate()
+    void Start()
     {
-        transform.Translate(Direction * Speed * Time.smoothDeltaTime);
+        
+    }
+
+    public virtual void MovementUpdate(float speedMultiplier = 1.0f)
+    {
+        transform.Translate(Direction * Speed * speedMultiplier * Time.smoothDeltaTime);
     }
 
     public void MoveTo(Vector2 position)
     {
         Position = position;
+    }
+
+    public virtual void SetSpeed(float speed)
+    {
+        Speed = speed;
     }
 
     public Vector2 GetDirection()

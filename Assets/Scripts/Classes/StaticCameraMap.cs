@@ -40,15 +40,15 @@ public class StaticCameraMap : IMap
     {
 
         //Check edges
-        if (Bounds.max.y > other.max.y)
+        if (Bounds.max.y < other.max.y)
         {
-            Debug.Log("Top collision");
+            //Debug.Log("Top collision");
             return EdgeCollision.Top;
 
         }
-        else if (Bounds.min.y < other.min.y)
+        else if (Bounds.min.y > other.min.y)
         {
-            Debug.Log("Bottom collision");
+            //Debug.Log("Bottom collision");
             return EdgeCollision.Bottom;
         }
 

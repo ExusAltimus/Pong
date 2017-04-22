@@ -6,11 +6,13 @@ using UnityEngine;
 
 public class AiPlayer : MoveableObject, IPlayer
 {
-    public float Difficulty = 0.4f;
-    public MoveableObject Target;
+    public float Difficulty = 0.8f;
+    public IMoveableObject Target;
 
     private bool _canAIMove = true;
     private float _lastMove = 0;
+    private float _aiSpeed = 0.0f;
+
     // Use this for initialization
     void Start()
     {
@@ -23,24 +25,27 @@ public class AiPlayer : MoveableObject, IPlayer
 
     }
 
-    public void SetTarget(MoveableObject target)
+    public void SetTarget(IMoveableObject target)
     {
         Target = target;
     }
 
+    public override void SetSpeed(float speed)
+    {
+        _aiSpeed = speed;
+    }
+
     public void HandleInput()
     {
-
+        float diff = Target.Bounds.center.y - Bounds.center.y;
+        float distance = Mathf.Abs(diff);
         if ((Time.time - _lastMove > 0.5f))
         {
             _lastMove = Time.time;
-            Speed = Random.Range(Difficulty, 1f); //Change speed every half second
-
+            Speed = Random.Range(Difficulty * _aiSpeed, _aiSpeed); //Change speed every half second
         }
 
-        float distance = Mathf.Abs(Target.Bounds.center.y - Bounds.center.y);
-
-        if (distance < 0.3f)
+        if (distance < 0.2f)
         {
             _canAIMove = false;
         }
