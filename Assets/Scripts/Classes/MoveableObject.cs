@@ -27,7 +27,9 @@ public class MoveableObject : MonoBehaviour, IMoveableObject
             transform.position = value;
         }
     }
+    public Vector2 LastPosition { get; set; }
 
+    public float Delta { get; set; }
     //In case we want to use our own boundry system later
     public Bounds Bounds
     {
@@ -50,6 +52,7 @@ public class MoveableObject : MonoBehaviour, IMoveableObject
 
     public virtual void MovementUpdate(float speedMultiplier = 1.0f)
     {
+        LastPosition = transform.position;
         transform.Translate(Direction * Speed * speedMultiplier * Time.deltaTime);
     }
 

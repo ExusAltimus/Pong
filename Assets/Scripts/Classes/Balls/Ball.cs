@@ -4,7 +4,8 @@ using UnityEngine;
 
 public class Ball : MoveableObject, IBall {
 
-    public float MAX_BOUNCE_ANGLE = 60.0f;
+    public float MAX_BOUNCE_ANGLE = 65.0f;
+    public float MAX_STARTING_BOUNCE_ANGLE = 45.0f;
     public float SpeedIncrement { get; set; }
     private bool _checkForPlayerCollisions = true; //Check for player collisions
 
@@ -36,7 +37,7 @@ public class Ball : MoveableObject, IBall {
     public void Initialize()
     {
         int xdir = Random.Range(-1.0f, 1.0f) <= 0 ? -1 : 1;
-        float angle = Random.Range(-MAX_BOUNCE_ANGLE, MAX_BOUNCE_ANGLE);
+        float angle = Random.Range(-MAX_STARTING_BOUNCE_ANGLE, MAX_STARTING_BOUNCE_ANGLE);
         Direction = new Vector2(Mathf.Cos(Mathf.Deg2Rad * angle) * xdir, Mathf.Sin(Mathf.Deg2Rad * angle));
 
         _checkForPlayerCollisions = true;
@@ -49,8 +50,17 @@ public class Ball : MoveableObject, IBall {
 
     public virtual bool CheckPlayerCollison(IPlayer player, ref Vector2 hit)
     {
-        if (Bounds.Intersects(player.Bounds) && _checkForPlayerCollisions)
+        //Bounds.Intersects(player.Bounds)
+        //4-Point intersect ray provides better player collision detection
+        //https://gyazo.com/505f4213ee305c6e226b355838ff29c0 <-- I drew this picture to show what it's doing
+        //Is there a better way? Probably. but it is 3am and my neck hurts
+        bool intersects = player.Bounds.IntersectsLine(LastPosition + (Vector2)Bounds.extents, Position + (Vector2)Bounds.extents);
+        intersects = intersects || player.Bounds.IntersectsLine(LastPosition - (Vector2)Bounds.extents, Position - (Vector2)Bounds.extents);
+        intersects = intersects || player.Bounds.IntersectsLine(LastPosition + (Vector2)Bounds.extents, Position - (Vector2)Bounds.extents);
+        intersects = intersects || player.Bounds.IntersectsLine(LastPosition - (Vector2)Bounds.extents, Position + (Vector2)Bounds.extents);
+        if (intersects && _checkForPlayerCollisions)
         {
+            //Position = DeltaMovement.origin + ((distance - Bounds.extents.x) * DeltaMovement.direction.normalized); //Jump to face of paddle
             int xdir = Direction.x > 0 ? -1 : 1;
             //int ydir = Direction.y > 0 ? -1 : 1;
             //Direction = new Vector2(xdir * Mathf.Cos(Mathf.Deg2Rad * angle), ydir * Mathf.Sin(Mathf.Deg2Rad * angle));
@@ -58,6 +68,7 @@ public class Ball : MoveableObject, IBall {
             //New algorithm for rebound https://gamedev.stackexchange.com/questions/4253/in-pong-how-do-you-calculate-the-balls-direction-when-it-bounces-off-the-paddl
             var relativeIntersectY = (Bounds.center.y - player.Bounds.center.y);
             var normalizedRelativeIntersectionY = (relativeIntersectY / player.Bounds.extents.y);
+            normalizedRelativeIntersectionY = Mathf.Clamp(normalizedRelativeIntersectionY, -1.0f, 1.0f);
             var bounceAngle = normalizedRelativeIntersectionY * MAX_BOUNCE_ANGLE;
             
             Direction = new Vector2(Mathf.Cos(Mathf.Deg2Rad * bounceAngle) * xdir, Mathf.Sin(Mathf.Deg2Rad * bounceAngle));

@@ -15,7 +15,7 @@ public class AiPlayer : MoveableObject, IPlayer
     private float _aiSpeed = 0.0f;
     private float _offset = 0.0f; //Offset from center, so the AI can put more angle on the ball
     private float _newOffset = 0.0f;
-    private float _speedMultiplier = 1.0f;
+    //private float _speedMultiplier = 1.0f;
     // Use this for initialization
     void Start()
     {
@@ -50,14 +50,16 @@ public class AiPlayer : MoveableObject, IPlayer
 
         float distance = Mathf.Abs(diff);
         float deltaTime = (Time.time - _lastMove);
+        float dLimit = Mathf.Clamp01(Difficulty);
+
         if (deltaTime > 0.5f)
         {
             _lastMove = Time.time;
-            float dLimit = Mathf.Clamp01(Difficulty);
+            
             //_newOffset += Random.Range(-0.25f, 0.25f) * dLimit; //Move closer to edge faster on harder difficulties
             _newOffset = Random.Range(-MAX_OFFSET, MAX_OFFSET) * dLimit; //Move closer to edge faster on harder difficulties
             _newOffset = Mathf.Clamp(_newOffset, -MAX_OFFSET, MAX_OFFSET) * dLimit; //Move closer to edge on harder difficulties
-            _speedMultiplier = Random.Range(dLimit, 1.0f);
+            //_speedMultiplier = Random.Range(dLimit, 1.0f);
         }
         else
         {
@@ -65,7 +67,7 @@ public class AiPlayer : MoveableObject, IPlayer
             _offset = Mathf.Lerp(_offset, _newOffset, deltaTime / 0.5f); //Lerp for smoother offset animation
         }
 
-        Speed = distance * _speedMultiplier * Target.Speed; //Change speed every half second
+        Speed = distance * ((dLimit * 0.8f) + 0.2f) * Target.Speed; //Change speed every half second
 
         if (_canAiMove)
         {

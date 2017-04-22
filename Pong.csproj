@@ -77,11 +77,11 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\Scripts\Classes\HitmarkerBall.cs" />
-    <Compile Include="Assets\Scripts\Classes\Ball.cs" />
-    <Compile Include="Assets\Scripts\Classes\AiPlayer.cs" />
-    <Compile Include="Assets\Scripts\Classes\HumanPlayer.cs" />
-    <Compile Include="Assets\Scripts\Classes\StaticCameraMap.cs" />
+    <Compile Include="Assets\Scripts\Classes\Balls\HitmarkerBall.cs" />
+    <Compile Include="Assets\Scripts\Classes\Balls\Ball.cs" />
+    <Compile Include="Assets\Scripts\Classes\Players\AiPlayer.cs" />
+    <Compile Include="Assets\Scripts\Classes\Players\HumanPlayer.cs" />
+    <Compile Include="Assets\Scripts\Classes\Maps\StaticCameraMap.cs" />
     <Compile Include="Assets\Scripts\Classes\MoveableObject.cs" />
     <Compile Include="Assets\Scripts\Classes\Pong.cs" />
     <Compile Include="Assets\Scripts\Extensions.cs" />
@@ -90,7 +90,7 @@
     <Compile Include="Assets\Scripts\Interfaces\IMoveableObject.cs" />
     <Compile Include="Assets\Scripts\Interfaces\IBall.cs" />
     <Compile Include="Assets\Scripts\Interfaces\IPlayer.cs" />
-    <Compile Include="Assets\Scripts\MainMenu.cs" />
+    <Compile Include="Assets\Scripts\Classes\MainMenu.cs" />
     <Compile Include="Assets\Scripts\GameManager.cs" />
     <Compile Include="Assets\Scripts\PongSceneManager.cs" />
   </ItemGroup>

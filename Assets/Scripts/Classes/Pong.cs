@@ -44,12 +44,14 @@ public class Pong : MonoBehaviour {
             player.HandleInput();
         }
 
+        Ball.MovementUpdate(GlobalSpeedMultiplier);
+
         //Movement (Could be put in their own update functions as well)
+        //Do AI calculations after ball has moved
         foreach (var player in Players)
         {
             player.MovementUpdate(GlobalSpeedMultiplier);
-        }
-        Ball.MovementUpdate(GlobalSpeedMultiplier);
+        } 
 
         //Collisions
         //Don't go off screen
@@ -134,16 +136,16 @@ public class Pong : MonoBehaviour {
         switch (GameManager.Instance.PlayerMode)
         {
             case PlayerMode.AiVersusAi:
-                AiVersusAi();
+                AiVersusAi(GameManager.Instance.AiDifficulty);
                 break;
             case PlayerMode.HumanVersusAi:
-                HumanVersusAi();
+                HumanVersusAi(GameManager.Instance.AiDifficulty);
                 break;
             case PlayerMode.HumanVersusHuman:
                 HumanVersusHuman();
                 break;
             default:
-                HumanVersusAi();
+                HumanVersusAi(GameManager.Instance.AiDifficulty);
                 break;
         }
 
