@@ -12,7 +12,7 @@ public class MoveableObject : MonoBehaviour, IMoveableObject
 
     public Collider Collider;
 
-    public float Speed;
+    public float Speed { get; set; }
 
     public Vector2 Direction; //Unit vector
     //In case we want to use our own positioning system later
@@ -50,7 +50,7 @@ public class MoveableObject : MonoBehaviour, IMoveableObject
 
     public virtual void MovementUpdate(float speedMultiplier = 1.0f)
     {
-        transform.Translate(Direction * Speed * speedMultiplier * Time.smoothDeltaTime);
+        transform.Translate(Direction * Speed * speedMultiplier * Time.deltaTime);
     }
 
     public void MoveTo(Vector2 position)

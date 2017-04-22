@@ -49,9 +49,5 @@ public class HumanPlayer : MoveableObject, IPlayer
             Direction.y = 0;
         }
     }
-    public float GetAttackSpeed()
-    {
-        return Direction.y;
-    }
 }
 

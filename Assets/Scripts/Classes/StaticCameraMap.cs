@@ -6,23 +6,25 @@ using UnityEngine;
 public class StaticCameraMap : IMap
 {
     public Bounds Bounds { get; private set; }
+    public Camera Camera { get; private set; }
     public StaticCameraMap(Camera camera)
     {
+        Camera = camera;
         var vertExtent = camera.orthographicSize;
         var horzExtent = vertExtent * Screen.width / Screen.height;
         Bounds = camera.OrthographicBounds(); //Set bounds
     }
 
-    public OutOfBounds CheckOutOfBounds(Bounds other)
+    public virtual OutOfBounds CheckOutOfBounds(Bounds other)
     {       
         //Check bounds
         if (Bounds.max.x < other.min.x)
         {
-            return OutOfBounds.Left;
+            return OutOfBounds.Right;
         }
         else if (Bounds.min.x > other.max.x)
         {
-            return OutOfBounds.Right;
+            return OutOfBounds.Left;
         }
         else if (Bounds.max.y < other.min.y) //Should never be satisfied, since ball bounces off top and bottom edges
         {
@@ -36,7 +38,7 @@ public class StaticCameraMap : IMap
     }
 
 
-    public EdgeCollision CheckEdgeCollision(Bounds other)
+    public virtual EdgeCollision CheckEdgeCollision(Bounds other)
     {
 
         //Check edges
@@ -50,6 +52,7 @@ public class StaticCameraMap : IMap
         {
             //Debug.Log("Bottom collision");
             return EdgeCollision.Bottom;
+
         }
 
         return EdgeCollision.None;

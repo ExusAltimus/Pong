@@ -8,5 +8,4 @@ public interface IPlayer : IMoveableObject
 {
 
     void HandleInput();
-    float GetAttackSpeed();
 }
